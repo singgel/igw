@@ -2,7 +2,15 @@
 
 ## NSDI'24 | 阿里云飞天洛神云网络论文解读——《LuoShen》揭秘新型融合网关 洛神云网关
 
-<https://mp.weixin.qq.com/s/RZpnq9nWej5qDdBsSlGMgQ>
+<https://zhuanlan.zhihu.com/p/712328378>
+
+## 阿里SIGCOMM重磅论文，洛神Sailfish可编程网关
+
+<https://zhuanlan.zhihu.com/p/712328392>
+
+## 可编程网卡芯片在滴滴云网络的应用实践
+
+<https://zhuanlan.zhihu.com/p/712324866>
 
 ## P4可编程设备在工业界的落地情况
 
