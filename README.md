@@ -1,3 +1,4 @@
+# [流表](./igw-p4-pipeline.md)
 # 重要barefoot产品bug缺陷
 ## pipeline的限速表项占满，有概率出现限速失效  
 
