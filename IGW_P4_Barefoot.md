@@ -62,9 +62,66 @@ sFlow 收集器：采集设备的状态传递给流量工程控制器。
 Open / R：运行在网络设备上，提供 IGP 和消息传递功能。
 LSP 代理（agent）：运行在网络设备上，代表中央控制器与设备转发表对接。
 
+Facebook Network
 Facebook 在骨干网、边缘网络都是使用 BGP 路由协议进行分布式控制，控制通道简单，避免多协议导致的复杂性，而对于流量工程采用集中的处理。
 
-![fb_dc](./zap/fb_dc.jpeg)
+基础设施的核心设计哲学是具备下面两种能力：
+快速演进（move fast）
+支撑快速增长（support rapid growth）
+同时，我们持续致力于保持网络基础设施足够简单（simple enough），以便我们规 模较小、效率非常高的工程师团队（small, highly efficient teams of engineers）来管理。
+我们的目标是：不管规模多大以及如何指数级增长，部署和维护网络基础设施都能够 越来越简单和快速（faster and easier）。
 
+更难的是，如何在集群大小（cluster size）、机柜带宽（rack bandwidth）和 出集群带宽（bandwidth out of the cluster）之间维护一个最优的长期平衡（ optimal long-term balance）。
+“集群”（cluster）的整个概念就是从网络受限（networking limitation）的情境 中诞生的：
+
+将大量计算资源（服务器机柜）集中到一个高性能网络区域
+由大型集群交换机能提供很高的内部容量（internal capacity）
+fabric 设计
+1. 网络单元要小很多
+每个 POD 只有 48 个服务器机柜，并且所有 POD 将都是这个大小。
+这种尺寸的组建模块（building block）非常高效，能匹配各数据中心的多种室内规划， 并且只需基本的中型交换机来汇聚 TOR。
+fabric 交换机更小的端口密度使得它们的内部架构非常简单、模块化和健壮， 并且这种设备能够很容易从多家厂商采购。
+2. 另一个显著不同是POD 之间如何连接，形成一个数据中心网络。
+TOR 交换机的端口五五分：一半向下连接服务器，一半向上连接 fabric 交换机。
+这使得我们在理论上能获得非阻塞（statistically non-blocking）的网络性能。
+![fb_4x40G_pod.jpg](./zap/fb_4x40G_pod.jpg)
+
+1. 创建了 4 个独立的 spine 交换机平面（“planes” of spine switches），每个平 面最多支持 48 台独立设备。
+2. 每个 POD 内的每台 fabric 交换机，会连接到其所在 spine 平面内的每台 spine 交换机。
+3. POD 和 spine 平面提供了一个模块化的网络拓扑，能够提供几十万台 10G 接入交换机， 以及 PB 级跨 POD 带宽（bisection bandwidth），使得数据中心 building 实现 了无超售的机柜到机柜性能（non-oversubscribed rack-to-rack performance）。
+![fb_4Xspine_fabric.jpg](./zap/fb_4Xspine_fabric.jpg)
+
+ 如何落地：https://arthurchiao.art/blog/facebook-f4-data-center-fabric-zh/
+
+ 2019年演进的架构
+ ![fb_16Xspine_fabric.png](./zap/fb_16Xspine_fabric.png)
+
+Google Network
+![fb_dc](./zap/fb_dc.jpeg)
+Google 的广域网实际上分为 B2 全球骨干网和 B4 数据中心互联网
 B2：面向用户的骨干网，用于连接 DC、CDN、POP、ISPs 等。B2 主要承载了面向用户的流量，和少部分内部流量（10%），带宽昂贵，整体可用性要求很高，利用率在 30%~40%之间。B2 采用商用路由器设备，并且运行 MPLS RSVP-TE 进行流量工程调节。
 B4：数据中心内部数据交换的网络，网络节点数量可控，带宽庞大，承载的 Google 数据中心间的大部分流量。B4 承载的业务容错能力强，带宽廉价，整体利用率超过 90%。使用自研交换机设备，为 Google SDN 等新技术的试验田。
+
+
+Amazon Global Network
+设计理念
+安全性：安全是云网络的生命线。
+可用性：需要保证当某条线路出现故障的时候，不会影响整个网络的可用性。
+故障强隔离：当网络发生故障的时候，尽量把故障限制在某个区域内。
+蜂窝架构：一个个网络模块构成的蜂窝式网络架构。
+规模：支撑上百万客户的应用网络需求。
+性能：对网络的吞吐量、延迟要求较高。
+
+Microsoft Network Azure网络
+Microsoft SWAN架构
+RSVP-TE/SR-TE。
+集中式 TE 资源分配算法。
+服务间通过资源分配模块协作。
+每个 Host 上都有代理，负责带宽请求和限流。
+
+
+从技术的角度看，互联网公司的网络演进是一个 SDN 的过程。SDN 是一个网络标准化的过程，是一个通信系统互联网化的状态，贯穿着网络的控制面、转发面、管理面。
+
+从运营的角度看，互联网公司的网络演进是从“所有流量 all in one” 到互联网思路构建网络，网络具有分布式、模块化、低耦合等特点。
+
+从布局的角度看，互联网公司的网络布局也是技术实力全球化扩张的缩影。也希望中国的互联网公司也能不断的扩张边界，进入全球化的食物链的顶端。
