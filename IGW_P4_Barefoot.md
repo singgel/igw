@@ -95,6 +95,7 @@ TOR 交换机的端口五五分：一半向下连接服务器，一半向上连�
 
  2019年演进的架构
  ![fb_16Xspine_fabric.png](./zap/fb_16Xspine_fabric.png)
+ ![fb_6Xbuilding_16Xspine_IDC.jpg](./zap/fb_6Xbuilding_16Xspine_IDC.jpg)
 
 Google Network
 ![fb_dc](./zap/fb_dc.jpeg)
